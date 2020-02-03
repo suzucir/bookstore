@@ -14,6 +14,9 @@ export default class Header extends React.Component {
               <li class="nav-item active">
                 <a class="nav-link" href="/#">Home <span class="sr-only">(current)</span></a>
               </li>
+              {/* <li class="nav-item active">
+                <a class="nav-link" href="/#">Profile <span class="sr-only">(current)</span></a>
+              </li> */}
             </ul>
           </div>
         </nav>

@@ -5,34 +5,46 @@ jobs:
       - image: circleci/node:10
     steps:
       - checkout # special step to check out source code to working directory
-
-      - restore_cache: # special step to restore the dependency cache
-          # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
-          keys: 
-            - v1-repo-{{ checksum "package-lock.json" }}
-
-      - run:
-          name: Install dependencies with NPM
-          command: npm install # replace with `yarn install` if using yarn
-
-      - save_cache: # special step to save the dependency cache
-          key: v1-repo-{{ checksum "package-lock.json" }}
+      - restore_cache:
+          keys:
+            # When lock file changes, use increasingly general patterns to restore cache
+            - npm-V1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - npm-V1-{{ .Branch }}-
+            - npm-V1-
+      - run: npm ci
+      - save_cache:
+          key: npm-V1-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
-            - "node_modules"
-
+            # This should cache the npm cache instead of node_modules, which is needed because
+            # npm ci actually removes node_modules before installing to guarantee a clean slate. 
+            # See https://circleci.com/orbs/registry/orb/apollo/oss-ci-cd-tooling#commands-npm_clean_install_with_caching
+            - ~/.npm
+  eslint:
+    steps:
       - run:
-          name: Run tests
-          # Runs jest with "--maxWorkers=2" argument to avoid OOM issues
-          command: npm test # replace with `yarn test` if using yarn
-
-      - store_artifacts: 
-          path: test-results
-
-      - store_test_results:
-          path: test-results
-
+          command: mkdir -p reports/eslint
+          name: Ensure artifacts directory is present
+      - run: yarn eslint --max-warnings=0 --format junit --output-file ./reports/eslint/eslint.xml
+  test:
+    steps:
+    - run:
+        command: yarn add --dev jest-junit
+        name: Install JUnit reporter
+    - run:
+        name: Run tests
+        # Runs jest with "--maxWorkers=2" argument to avoid OOM issues
+        command: yarn test --ci --runInBand --reporters=default --reporters=jest-junit
+        environment:
+          JEST_JUNIT_OUTPUT: reports/junit/js-test-results.xml
+    - store_artifacts: 
+        path: test-results
+    - store_test_results:
+        path: test-results
+  
 workflows:
-  version: 2
-  Build and Test:
+  version: 2.0
+  Build, Lint and Test:
     jobs:
       - build
+      - eslint
+      - test

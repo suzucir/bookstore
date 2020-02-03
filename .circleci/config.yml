@@ -1,4 +1,4 @@
-version: 2 # use CircleCI 2.0
+version: 2.1
 jobs:
   build:
     docker:
@@ -20,12 +20,16 @@ jobs:
             # See https://circleci.com/orbs/registry/orb/apollo/oss-ci-cd-tooling#commands-npm_clean_install_with_caching
             - ~/.npm
   eslint:
+    docker:
+      - image: circleci/node:10    
     steps:
       - run:
           command: mkdir -p reports/eslint
           name: Ensure artifacts directory is present
       - run: yarn eslint --max-warnings=0 --format junit --output-file ./reports/eslint/eslint.xml
   test:
+    docker:
+      - image: circleci/node:10
     steps:
     - run:
         command: yarn add --dev jest-junit
@@ -40,9 +44,7 @@ jobs:
         path: test-results
     - store_test_results:
         path: test-results
-  
 workflows:
-  version: 2.0
   Build, Lint and Test:
     jobs:
       - build

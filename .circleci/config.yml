@@ -37,7 +37,7 @@ jobs:
     - run:
         name: Run tests
         # Runs jest with "--maxWorkers=2" argument to avoid OOM issues
-        command: npm test --ci --runInBand --reporters=default --reporters=jest-junit
+        command: yarn test --ci --runInBand --reporters=default --reporters=jest-junit
         environment:
           JEST_JUNIT_OUTPUT: reports/junit/js-test-results.xml
     - store_artifacts: 

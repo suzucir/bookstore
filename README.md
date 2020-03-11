@@ -1,6 +1,6 @@
 # CircleCI Demo React JS App
 
-[![CircleCI](https://circleci.com/gh/CircleCI-Public/circleci-demo-javascript-react-app.svg?style=svg)](https://circleci.com/gh/CircleCI-Public/circleci-demo-javascript-react-app)
+[![CircleCI](https://circleci.com/gh/pelican-bookstore/bookstore.svg?style=svg)](https://circleci.com/gh/pelican-bookstore/bookstore)
 
 This is an example application demonstrating a simple JavaScript app built with React using CircleCI 2.0, 2.1 and 2.0 CircleCI Server configuration. 
 
